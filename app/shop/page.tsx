@@ -48,14 +48,18 @@ export default function ShopPage() {
   );
 
   return (
-    <section className="max-w-6xl mx-auto px-4 py-10">
-      <h1 className="text-2xl font-semibold mb-2">Shop Cookies</h1>
-      <p className="text-sm text-morselBrown/70 mb-6">
+    <section className="max-w-6xl mx-auto px-4 py-10 mt-16">
+      <h1 className="text-4xl md:text-5xl font-display font-bold text-morselCocoa mb-3">
+        Shop Cookies
+      </h1>
+      <p className="text-lg text-morselBrown/70 mb-8">
         Baked to order in small batches. Please allow a short lead time for freshness.
       </p>
 
-      <div className="mb-6 pb-6 border-b border-morselGold/20">
-        <h2 className="text-sm font-semibold mb-3">View Ingredient Labels</h2>
+      <div className="mb-8 pb-6 border-b border-morselGold/20">
+        <h2 className="text-lg font-display font-semibold mb-4 text-morselCocoa">
+          View Ingredient Labels
+        </h2>
         <div className="flex flex-wrap gap-3">
           {uniqueFlavors.map((flavor) => {
             const label = ingredientLabels[flavor];
@@ -64,7 +68,7 @@ export default function ShopPage() {
               <button
                 key={flavor}
                 onClick={() => openModal(flavor)}
-                className="px-4 py-2 text-xs rounded-full border border-morselBrown/40 text-morselBrown hover:border-morselGold hover:text-morselGold hover:bg-morselGold/10 transition"
+                className="px-5 py-2.5 text-sm rounded-full border-2 border-morselBrown/40 text-morselBrown hover:border-morselGold hover:text-morselGold hover:bg-morselGold/10 transition-all duration-200 hover:scale-[1.02]"
               >
                 View {label.name} Ingredients
               </button>
@@ -73,7 +77,7 @@ export default function ShopPage() {
         </div>
       </div>
 
-      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
+      <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
         {products.map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}

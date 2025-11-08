@@ -9,12 +9,21 @@ module.exports = {
       colors: {
         morselCream: "#FFF7ED",
         morselBrown: "#3F2A1C",
-        morselGold: "#D79B4E"
+        morselGold: "#D79B4E",
+        morselCocoa: "#2C1810", // Rich cocoa/espresso for buttons & headings
+        morselGoldLight: "#E8B875", // Lighter gold for gradients
       },
       fontFamily: {
-        display: ["system-ui", "sans-serif"],
-        body: ["system-ui", "sans-serif"]
-      }
+        serif: ["Georgia", "Times New Roman", "serif"],
+        display: ["Georgia", "Times New Roman", "serif"], // Serif for headings
+        body: ["system-ui", "-apple-system", "sans-serif"],
+      },
+      boxShadow: {
+        'button': '0 2px 8px rgba(63, 42, 28, 0.2)',
+        'button-hover': '0 4px 12px rgba(63, 42, 28, 0.3)',
+        'card': '0 2px 8px rgba(0, 0, 0, 0.08)',
+        'card-hover': '0 4px 16px rgba(0, 0, 0, 0.12)',
+      },
     }
   },
   plugins: []

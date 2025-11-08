@@ -1,20 +1,39 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 
 export default function Navbar() {
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
-    <header className="w-full border-b border-morselGold/20 bg-white/80 backdrop-blur">
+    <header
+      className={`fixed top-0 left-0 right-0 z-50 w-full border-b transition-all duration-200 ${
+        isScrolled
+          ? "bg-white/95 backdrop-blur-md border-morselGold/30 shadow-sm"
+          : "bg-white/80 backdrop-blur border-morselGold/20"
+      }`}
+    >
       <nav className="max-w-6xl mx-auto flex items-center justify-between py-4 px-4">
-        <Link href="/" className="text-xl font-semibold tracking-tight">
+        <Link href="/" className="text-xl font-display font-semibold tracking-tight">
           Marilyn&apos;s <span className="text-morselGold">Morsels</span>
         </Link>
         <div className="flex gap-6 text-sm">
-          <Link href="/shop" className="hover:text-morselGold">
+          <Link href="/shop" className="hover:text-morselGold transition-colors duration-150">
             Shop
           </Link>
-          <Link href="/about" className="hover:text-morselGold">
+          <Link href="/about" className="hover:text-morselGold transition-colors duration-150">
             About
           </Link>
-          <Link href="/bulk-orders" className="hover:text-morselGold">
+          <Link href="/bulk-orders" className="hover:text-morselGold transition-colors duration-150">
             Bulk Orders
           </Link>
         </div>
@@ -22,4 +41,3 @@ export default function Navbar() {
     </header>
   );
 }
-
