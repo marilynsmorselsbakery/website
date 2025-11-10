@@ -6,17 +6,18 @@ import { ProductOption } from "@/lib/products";
 import chipsBowl from "@/assets/chips_bowl.png";
 import sixCookie from "@/assets/six_cookie.png";
 import freshDozen from "@/assets/fresh_dozen.png";
-import plateDisplay from "@/assets/plate_display.png";
 import cookieSpread from "@/assets/cookie_spread.png";
 import milkStack from "@/assets/milk_stack.png";
+import plateStack from "@/assets/plate_stack.png";
+import cookieStackLean from "@/assets/cookie-stack-lean.jpg";
 
 const productImageMap: Record<string, any> = {
-  "cc-6": chipsBowl,
-  "cc-12": freshDozen,
-  "bc-6": sixCookie,
-  "bc-12": plateDisplay,
-  "hh-6": cookieSpread,
-  "hh-12": milkStack,
+  "cc-6": plateStack, // Chocolate Chip 6-pack
+  "cc-12": cookieStackLean, // Chocolate Chip 12-pack
+  "bc-6": milkStack, // Butterscotch 6-pack
+  "bc-12": chipsBowl, // Butterscotch 12-pack
+  "hh-6": sixCookie, // Half & Half 6-pack
+  "hh-12": freshDozen, // Half & Half 12-pack
 };
 
 const ingredientLabels: Record<string, { url: string; name: string }> = {
