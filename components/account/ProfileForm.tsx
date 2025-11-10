@@ -26,6 +26,17 @@ const emptyFormState: FormState = {
   postal_code: "",
 };
 
+const profileToFormState = (profile: Profile | null): FormState => ({
+  ...emptyFormState,
+  full_name: profile?.full_name ?? "",
+  phone: profile?.phone ?? "",
+  address_line1: profile?.address_line1 ?? "",
+  address_line2: profile?.address_line2 ?? "",
+  city: profile?.city ?? "",
+  state: profile?.state ?? "",
+  postal_code: profile?.postal_code ?? "",
+});
+
 type Props = {
   email: string;
   initialProfile: Profile | null;
@@ -33,16 +44,7 @@ type Props = {
 
 export default function ProfileForm({ email, initialProfile }: Props) {
   const router = useRouter();
-  const [formState, setFormState] = useState<FormState>(() => ({
-    ...emptyFormState,
-    full_name: initialProfile?.full_name ?? "",
-    phone: initialProfile?.phone ?? "",
-    address_line1: initialProfile?.address_line1 ?? "",
-    address_line2: initialProfile?.address_line2 ?? "",
-    city: initialProfile?.city ?? "",
-    state: initialProfile?.state ?? "",
-    postal_code: initialProfile?.postal_code ?? "",
-  }));
+  const [formState, setFormState] = useState<FormState>(() => profileToFormState(initialProfile));
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -76,10 +78,7 @@ export default function ProfileForm({ email, initialProfile }: Props) {
     }
 
     const { profile } = (await response.json()) as { profile: Profile };
-    setFormState((prev) => ({
-      ...prev,
-      ...profile,
-    }));
+    setFormState(profileToFormState(profile));
     setSuccessMessage("Profile saved.");
     setIsSubmitting(false);
     router.refresh();
