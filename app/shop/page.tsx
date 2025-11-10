@@ -32,24 +32,6 @@ export default function ShopPage() {
     setSelectedProduct(null);
   };
 
-  const handleBuyNow = async (product: ProductOption) => {
-    const res = await fetch("/api/checkout", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ productId: product.id, quantity: 1 }),
-    });
-
-    if (!res.ok) {
-      alert("Something went wrong starting checkout. Try again.");
-      return;
-    }
-
-    const data = await res.json();
-    if (data.url) {
-      window.location.href = data.url;
-    }
-  };
-
   // Group products by flavor
   const chocolateChipProducts = products.filter((p) => p.flavor === "chocolate_chip");
   const butterscotchProducts = products.filter((p) => p.flavor === "butterscotch_chip");
@@ -132,16 +114,7 @@ export default function ShopPage() {
         isOpen={isModalOpen}
         onClose={closeModal}
         product={selectedProduct}
-        onBuyNow={
-          selectedProduct
-            ? () => {
-                closeModal();
-                handleBuyNow(selectedProduct);
-              }
-            : undefined
-        }
       />
     </section>
   );
 }
-

@@ -1,8 +1,11 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
+import toast from "react-hot-toast";
 import { ProductOption } from "@/lib/products";
+import { useCart } from "./CartProvider";
+import QuantitySelector from "./QuantitySelector";
 import chipsBowl from "@/assets/chips_bowl.png";
 import sixCookie from "@/assets/six_cookie.png";
 import freshDozen from "@/assets/fresh_dozen.png";
@@ -35,15 +38,15 @@ interface ProductDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
   product: ProductOption | null;
-  onBuyNow?: () => void;
 }
 
 export default function ProductDetailModal({
   isOpen,
   onClose,
   product,
-  onBuyNow,
 }: ProductDetailModalProps) {
+  const [quantity, setQuantity] = useState(1);
+  const { addItem } = useCart();
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -55,7 +58,13 @@ export default function ProductDetailModal({
     };
   }, [isOpen]);
 
-  if (!isOpen || !product) return null;
+  const handleAddToCart = () => {
+    if (!product) return;
+    addItem(product.id, quantity);
+    toast.success(`${quantity} ${product.name}${quantity > 1 ? "s" : ""} added to cart`);
+    setQuantity(1);
+    onClose();
+  };
 
   const productImage = productImageMap[product.id] || chipsBowl;
   const ingredientLabel =
@@ -210,12 +219,23 @@ export default function ProductDetailModal({
 
         {/* Footer */}
         <div className="p-6 border-t border-morselGold/20 bg-morselCream/20">
-          <button
-            onClick={onBuyNow}
-            className="w-full px-8 py-4 bg-morselCocoa text-white text-base font-semibold rounded-full shadow-button hover:shadow-button-hover hover:scale-[1.02] transition-all duration-200"
-          >
-            Buy Now - ${(product.priceCents / 100).toFixed(2)}
-          </button>
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center justify-center gap-4">
+              <span className="text-sm font-medium text-morselBrown/70">Quantity:</span>
+              <QuantitySelector
+                value={quantity}
+                onChange={setQuantity}
+                min={1}
+                max={12}
+              />
+            </div>
+            <button
+              onClick={handleAddToCart}
+              className="w-full px-8 py-4 bg-morselCocoa text-white text-base font-semibold rounded-full shadow-button hover:shadow-button-hover hover:scale-[1.02] transition-all duration-200"
+            >
+              Add to Cart - ${((product.priceCents * quantity) / 100).toFixed(2)}
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -44,7 +44,9 @@ type Props = {
 
 export default function ProfileForm({ email, initialProfile }: Props) {
   const router = useRouter();
+  const [isEditing, setIsEditing] = useState(false);
   const [formState, setFormState] = useState<FormState>(() => profileToFormState(initialProfile));
+  const [savedState, setSavedState] = useState<FormState>(() => profileToFormState(initialProfile));
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -54,6 +56,19 @@ export default function ProfileForm({ email, initialProfile }: Props) {
       ...prev,
       [field]: value,
     }));
+  };
+
+  const handleEdit = () => {
+    setIsEditing(true);
+    setErrorMessage(null);
+    setSuccessMessage(null);
+  };
+
+  const handleCancel = () => {
+    setFormState(savedState);
+    setIsEditing(false);
+    setErrorMessage(null);
+    setSuccessMessage(null);
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -78,82 +93,138 @@ export default function ProfileForm({ email, initialProfile }: Props) {
     }
 
     const { profile } = (await response.json()) as { profile: Profile };
-    setFormState(profileToFormState(profile));
+    const newState = profileToFormState(profile);
+    setFormState(newState);
+    setSavedState(newState);
     setSuccessMessage("Profile saved.");
     setIsSubmitting(false);
+    setIsEditing(false);
     router.refresh();
   };
 
   return (
     <div className="space-y-6">
       <section className="rounded-lg border border-morselGold/30 bg-white/90 p-8 shadow-sm">
-        <header className="mb-6">
-          <h1 className="text-2xl font-semibold">Account details</h1>
-          <p className="text-sm text-morselBrown/70">Signed in as {email}</p>
+        <header className="mb-6 flex items-start justify-between">
+          <div>
+            <h1 className="text-2xl font-semibold">Account details</h1>
+            <p className="text-sm text-morselBrown/70">Signed in as {email}</p>
+          </div>
+          {!isEditing && (
+            <button
+              type="button"
+              onClick={handleEdit}
+              className="rounded-md border border-morselGold/60 px-4 py-2 text-sm transition hover:border-morselGold hover:bg-morselGold/10"
+            >
+              Edit
+            </button>
+          )}
         </header>
         <form className="grid grid-cols-1 gap-5 md:grid-cols-2" onSubmit={handleSubmit}>
           <label className="text-sm md:col-span-2">
             <span className="mb-1 block font-medium">Full name</span>
-            <input
-              type="text"
-              value={formState.full_name}
-              onChange={(event) => handleChange("full_name")(event.target.value)}
-              className="w-full rounded-md border border-morselGold/40 px-3 py-2 focus:border-morselGold focus:outline-none focus:ring"
-            />
+            {isEditing ? (
+              <input
+                type="text"
+                value={formState.full_name}
+                onChange={(event) => handleChange("full_name")(event.target.value)}
+                className="w-full rounded-md border border-morselGold/40 px-3 py-2 focus:border-morselGold focus:outline-none focus:ring"
+              />
+            ) : (
+              <div className="rounded-md border border-transparent px-3 py-2 text-morselBrown/80">
+                {formState.full_name || <span className="text-morselBrown/50">Not set</span>}
+              </div>
+            )}
           </label>
           <label className="text-sm md:col-span-2">
             <span className="mb-1 block font-medium">Phone</span>
-            <input
-              type="tel"
-              value={formState.phone}
-              onChange={(event) => handleChange("phone")(event.target.value)}
-              className="w-full rounded-md border border-morselGold/40 px-3 py-2 focus:border-morselGold focus:outline-none focus:ring"
-            />
+            {isEditing ? (
+              <input
+                type="tel"
+                value={formState.phone}
+                onChange={(event) => handleChange("phone")(event.target.value)}
+                className="w-full rounded-md border border-morselGold/40 px-3 py-2 focus:border-morselGold focus:outline-none focus:ring"
+              />
+            ) : (
+              <div className="rounded-md border border-transparent px-3 py-2 text-morselBrown/80">
+                {formState.phone || <span className="text-morselBrown/50">Not set</span>}
+              </div>
+            )}
           </label>
           <label className="text-sm md:col-span-2">
             <span className="mb-1 block font-medium">Address line 1</span>
-            <input
-              type="text"
-              value={formState.address_line1}
-              onChange={(event) => handleChange("address_line1")(event.target.value)}
-              className="w-full rounded-md border border-morselGold/40 px-3 py-2 focus:border-morselGold focus:outline-none focus:ring"
-            />
+            {isEditing ? (
+              <input
+                type="text"
+                value={formState.address_line1}
+                onChange={(event) => handleChange("address_line1")(event.target.value)}
+                className="w-full rounded-md border border-morselGold/40 px-3 py-2 focus:border-morselGold focus:outline-none focus:ring"
+              />
+            ) : (
+              <div className="rounded-md border border-transparent px-3 py-2 text-morselBrown/80">
+                {formState.address_line1 || <span className="text-morselBrown/50">Not set</span>}
+              </div>
+            )}
           </label>
           <label className="text-sm md:col-span-2">
             <span className="mb-1 block font-medium">Address line 2</span>
-            <input
-              type="text"
-              value={formState.address_line2}
-              onChange={(event) => handleChange("address_line2")(event.target.value)}
-              className="w-full rounded-md border border-morselGold/40 px-3 py-2 focus:border-morselGold focus:outline-none focus:ring"
-            />
+            {isEditing ? (
+              <input
+                type="text"
+                value={formState.address_line2}
+                onChange={(event) => handleChange("address_line2")(event.target.value)}
+                className="w-full rounded-md border border-morselGold/40 px-3 py-2 focus:border-morselGold focus:outline-none focus:ring"
+              />
+            ) : (
+              <div className="rounded-md border border-transparent px-3 py-2 text-morselBrown/80">
+                {formState.address_line2 || <span className="text-morselBrown/50">Not set</span>}
+              </div>
+            )}
           </label>
           <label className="text-sm">
             <span className="mb-1 block font-medium">City</span>
-            <input
-              type="text"
-              value={formState.city}
-              onChange={(event) => handleChange("city")(event.target.value)}
-              className="w-full rounded-md border border-morselGold/40 px-3 py-2 focus:border-morselGold focus:outline-none focus:ring"
-            />
+            {isEditing ? (
+              <input
+                type="text"
+                value={formState.city}
+                onChange={(event) => handleChange("city")(event.target.value)}
+                className="w-full rounded-md border border-morselGold/40 px-3 py-2 focus:border-morselGold focus:outline-none focus:ring"
+              />
+            ) : (
+              <div className="rounded-md border border-transparent px-3 py-2 text-morselBrown/80">
+                {formState.city || <span className="text-morselBrown/50">Not set</span>}
+              </div>
+            )}
           </label>
           <label className="text-sm">
             <span className="mb-1 block font-medium">State</span>
-            <input
-              type="text"
-              value={formState.state}
-              onChange={(event) => handleChange("state")(event.target.value)}
-              className="w-full rounded-md border border-morselGold/40 px-3 py-2 focus:border-morselGold focus:outline-none focus:ring"
-            />
+            {isEditing ? (
+              <input
+                type="text"
+                value={formState.state}
+                onChange={(event) => handleChange("state")(event.target.value)}
+                className="w-full rounded-md border border-morselGold/40 px-3 py-2 focus:border-morselGold focus:outline-none focus:ring"
+              />
+            ) : (
+              <div className="rounded-md border border-transparent px-3 py-2 text-morselBrown/80">
+                {formState.state || <span className="text-morselBrown/50">Not set</span>}
+              </div>
+            )}
           </label>
           <label className="text-sm md:col-span-2 md:max-w-xs">
             <span className="mb-1 block font-medium">Postal code</span>
-            <input
-              type="text"
-              value={formState.postal_code}
-              onChange={(event) => handleChange("postal_code")(event.target.value)}
-              className="w-full rounded-md border border-morselGold/40 px-3 py-2 focus:border-morselGold focus:outline-none focus:ring"
-            />
+            {isEditing ? (
+              <input
+                type="text"
+                value={formState.postal_code}
+                onChange={(event) => handleChange("postal_code")(event.target.value)}
+                className="w-full rounded-md border border-morselGold/40 px-3 py-2 focus:border-morselGold focus:outline-none focus:ring"
+              />
+            ) : (
+              <div className="rounded-md border border-transparent px-3 py-2 text-morselBrown/80">
+                {formState.postal_code || <span className="text-morselBrown/50">Not set</span>}
+              </div>
+            )}
           </label>
           {errorMessage ? (
             <p className="md:col-span-2 text-sm text-red-600">{errorMessage}</p>
@@ -161,15 +232,25 @@ export default function ProfileForm({ email, initialProfile }: Props) {
           {successMessage ? (
             <p className="md:col-span-2 text-sm text-emerald-600">{successMessage}</p>
           ) : null}
-          <div className="md:col-span-2">
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="rounded-md bg-morselGold px-4 py-2 text-white transition hover:bg-morselGold/90 disabled:cursor-not-allowed disabled:opacity-70"
-            >
-              {isSubmitting ? "Saving..." : "Save changes"}
-            </button>
-          </div>
+          {isEditing && (
+            <div className="md:col-span-2 flex gap-3">
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="rounded-md bg-morselGold px-4 py-2 text-white transition hover:bg-morselGold/90 disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                {isSubmitting ? "Saving..." : "Save changes"}
+              </button>
+              <button
+                type="button"
+                onClick={handleCancel}
+                disabled={isSubmitting}
+                className="rounded-md border border-morselGold/60 px-4 py-2 transition hover:border-morselGold hover:bg-morselGold/10 disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                Cancel
+              </button>
+            </div>
+          )}
         </form>
       </section>
     </div>

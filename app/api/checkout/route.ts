@@ -16,6 +16,12 @@ const stripe = stripeSecretKey
 
 const DOMAIN = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
 
+type CartItem = {
+  productId: string;
+  quantity: number;
+  priceCents: number;
+};
+
 export async function POST(request: NextRequest) {
   try {
     if (!stripe) {
@@ -32,11 +38,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Authentication required" }, { status: 401 });
     }
 
-    const { productId, quantity } = await request.json();
-    const product = getProductById(productId);
+    const { items } = (await request.json()) as { items: CartItem[] };
 
-    if (!product || !quantity || quantity < 1) {
-      return NextResponse.json({ error: "Invalid product or quantity" }, { status: 400 });
+    if (!Array.isArray(items) || items.length === 0) {
+      return NextResponse.json({ error: "Cart is empty" }, { status: 400 });
     }
 
     const userId = user.id;
@@ -126,15 +131,29 @@ export async function POST(request: NextRequest) {
       profile = updatedProfile;
     }
 
+    const lineItems = items
+      .map((item) => {
+        const product = getProductById(item.productId);
+        if (!product || item.quantity < 1) {
+          return null;
+        }
+        return {
+          price: product.stripePriceId,
+          quantity: item.quantity,
+        };
+      })
+      .filter((item): item is { price: string; quantity: number } => item !== null);
+
+    if (lineItems.length === 0) {
+      return NextResponse.json({ error: "No valid items in cart" }, { status: 400 });
+    }
+
+    const productIds = items.map((item) => item.productId).join(",");
+
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       customer: stripeCustomerId ?? undefined,
-      line_items: [
-        {
-          price: product.stripePriceId,
-          quantity,
-        },
-      ],
+      line_items: lineItems,
       shipping_address_collection: {
         allowed_countries: ["US"],
       },
@@ -145,7 +164,7 @@ export async function POST(request: NextRequest) {
       success_url: `${DOMAIN}/success`,
       cancel_url: `${DOMAIN}/cancel`,
       metadata: {
-        productId: product.id,
+        productIds: productIds,
         supabase_user_id: userId,
       },
     });
@@ -156,4 +175,3 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Stripe error" }, { status: 500 });
   }
 }
-
