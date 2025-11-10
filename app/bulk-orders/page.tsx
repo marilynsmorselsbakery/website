@@ -63,96 +63,97 @@ export default function BulkOrdersPage() {
           onSubmit={handleSubmit}
           className="space-y-5 bg-white/95 backdrop-blur-sm p-6 md:p-8 rounded-2xl shadow-xl shadow-morselGold/10 border border-morselGold/20"
         >
-        <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-4 md:grid-cols-2">
+            <div>
+              <label className="block text-xs mb-1" htmlFor="name">
+                Name
+              </label>
+              <input
+                id="name"
+                name="name"
+                required
+                className="w-full border text-sm px-3 py-2 rounded-md"
+              />
+            </div>
+            <div>
+              <label className="block text-xs mb-1" htmlFor="company">
+                Company (optional)
+              </label>
+              <input
+                id="company"
+                name="company"
+                className="w-full border text-sm px-3 py-2 rounded-md"
+              />
+            </div>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            <div>
+              <label className="block text-xs mb-1" htmlFor="email">
+                Email
+              </label>
+              <input
+                id="email"
+                type="email"
+                name="email"
+                required
+                className="w-full border text-sm px-3 py-2 rounded-md"
+              />
+            </div>
+            <div>
+              <label className="block text-xs mb-1" htmlFor="phone">
+                Phone (optional)
+              </label>
+              <input
+                id="phone"
+                name="phone"
+                className="w-full border text-sm px-3 py-2 rounded-md"
+              />
+            </div>
+          </div>
+
           <div>
-            <label className="block text-xs mb-1" htmlFor="name">
-              Name
+            <label className="block text-xs mb-1" htmlFor="details">
+              Estimated quantity & date
             </label>
             <input
-              id="name"
-              name="name"
+              id="details"
+              name="details"
               required
               className="w-full border text-sm px-3 py-2 rounded-md"
             />
           </div>
+
           <div>
-            <label className="block text-xs mb-1" htmlFor="company">
-              Company (optional)
+            <label className="block text-xs mb-1" htmlFor="notes">
+              Notes & preferences
             </label>
-            <input
-              id="company"
-              name="company"
+            <textarea
+              id="notes"
+              name="notes"
+              rows={4}
               className="w-full border text-sm px-3 py-2 rounded-md"
             />
           </div>
-        </div>
 
-        <div className="grid gap-4 md:grid-cols-2">
-          <div>
-            <label className="block text-xs mb-1" htmlFor="email">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              name="email"
-              required
-              className="w-full border text-sm px-3 py-2 rounded-md"
-            />
-          </div>
-          <div>
-            <label className="block text-xs mb-1" htmlFor="phone">
-              Phone (optional)
-            </label>
-            <input
-              id="phone"
-              name="phone"
-              className="w-full border text-sm px-3 py-2 rounded-md"
-            />
-          </div>
-        </div>
+          <button
+            type="submit"
+            disabled={status === "submitting"}
+            className="px-6 py-3 text-base font-semibold rounded-full bg-morselCocoa text-white shadow-button hover:shadow-button-hover hover:scale-[1.02] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {status === "submitting" ? "Sending..." : "Submit Inquiry"}
+          </button>
 
-        <div>
-          <label className="block text-xs mb-1" htmlFor="details">
-            Estimated quantity & date
-          </label>
-          <input
-            id="details"
-            name="details"
-            required
-            className="w-full border text-sm px-3 py-2 rounded-md"
-          />
-        </div>
-
-        <div>
-          <label className="block text-xs mb-1" htmlFor="notes">
-            Notes & preferences
-          </label>
-          <textarea
-            id="notes"
-            name="notes"
-            rows={4}
-            className="w-full border text-sm px-3 py-2 rounded-md"
-          />
-        </div>
-
-        <button
-          type="submit"
-          disabled={status === "submitting"}
-          className="px-6 py-3 text-base font-semibold rounded-full bg-morselCocoa text-white shadow-button hover:shadow-button-hover hover:scale-[1.02] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {status === "submitting" ? "Sending..." : "Submit Inquiry"}
-        </button>
-
-        {status === "sent" && (
-          <p className="text-xs text-green-700 mt-1">
-            Thank you. We&apos;ll be in touch shortly.
-          </p>
-        )}
-        {status === "error" && (
-          <p className="text-xs text-red-700 mt-1">Something went wrong. Please try again.</p>
-        )}
-      </form>
+          {status === "sent" && (
+            <p className="text-xs text-green-700 mt-1">
+              Thank you. We&apos;ll be in touch shortly.
+            </p>
+          )}
+          {status === "error" && (
+            <p className="text-xs text-red-700 mt-1">Something went wrong. Please try again.</p>
+          )}
+        </form>
+      </div>
     </section>
   );
 }

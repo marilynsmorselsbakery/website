@@ -12,7 +12,7 @@ export default function AboutPage() {
   return (
     <section className="relative max-w-3xl mx-auto px-4 py-14 md:py-20 mt-16 overflow-hidden">
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-[-4rem] -right-20 w-72 h-72 opacity-15 blur-sm">
+        <div className="absolute top-[-5rem] -right-28 w-80 h-80 opacity-25 blur-sm">
           <div
             className="relative w-full h-full"
             style={{ transform: `translateY(${offsetTop}px)` }}
@@ -20,7 +20,7 @@ export default function AboutPage() {
             <Image src={cookieSpread} alt="" fill className="object-contain" aria-hidden="true" />
           </div>
         </div>
-        <div className="absolute bottom-[-5rem] -left-24 w-80 h-80 opacity-20 blur-sm">
+        <div className="absolute bottom-[-6rem] -left-32 w-96 h-96 opacity-25 blur-sm">
           <div
             className="relative w-full h-full"
             style={{ transform: `translateY(${offsetBottom}px)` }}
@@ -28,7 +28,7 @@ export default function AboutPage() {
             <Image src={plateDisplay} alt="" fill className="object-contain" aria-hidden="true" />
           </div>
         </div>
-        <div className="absolute inset-0 bg-gradient-to-b from-white via-white/80 to-white" />
+        <div className="absolute inset-0 bg-gradient-to-b from-morselCream/40 via-white/70 to-white" />
       </div>
 
       <div className="relative z-10 space-y-4">
