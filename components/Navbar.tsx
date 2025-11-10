@@ -65,12 +65,12 @@ export default function Navbar() {
             <Image
               src={logoSquare}
               alt="Marilyn's Morsels"
-              width={64}
-              height={64}
-              className="h-12 w-12 md:h-16 md:w-16"
+              width={80}
+              height={80}
+              className="h-16 w-16 md:h-20 md:w-20"
               priority
             />
-            <span className="text-2xl md:text-3xl font-display font-semibold tracking-tight">
+            <span className="text-3xl md:text-4xl font-display font-semibold tracking-tight">
               Marilyn&apos;s <span className="text-morselGold">Morsels</span>
             </span>
           </Link>
