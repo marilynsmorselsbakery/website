@@ -1,9 +1,16 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
+import { useParallax } from "@/hooks/useParallax";
+import milkStack from "@/assets/milk_stack.png";
+import plateStack from "@/assets/plate_stack.png";
 
 export default function BulkOrdersPage() {
   const [status, setStatus] = useState<"idle" | "submitting" | "sent" | "error">("idle");
+
+  const offsetTop = useParallax({ speed: 0.2, offset: -40 });
+  const offsetBottom = useParallax({ speed: 0.1, offset: 60 });
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -22,19 +29,40 @@ export default function BulkOrdersPage() {
   };
 
   return (
-    <section className="max-w-3xl mx-auto px-4 py-10 mt-16">
-      <h1 className="text-3xl md:text-4xl font-display font-bold text-morselCocoa mb-3">
-        Bulk & Corporate Orders
-      </h1>
-      <p className="text-base text-morselBrown/80 mb-8">
-        Need cookies for an office, client gifts, events, or subscription treats?
-        Share a few details and we&apos;ll follow up with a custom quote.
-      </p>
+    <section className="relative max-w-4xl mx-auto px-4 py-14 md:py-20 mt-16 overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute -top-16 -left-20 w-80 h-80 opacity-15 blur-sm">
+          <div
+            className="relative w-full h-full"
+            style={{ transform: `translateY(${offsetTop}px)` }}
+          >
+            <Image src={milkStack} alt="" fill className="object-contain" aria-hidden="true" />
+          </div>
+        </div>
+        <div className="absolute bottom-[-6rem] -right-24 w-96 h-96 opacity-20 blur-sm">
+          <div
+            className="relative w-full h-full"
+            style={{ transform: `translateY(${offsetBottom}px)` }}
+          >
+            <Image src={plateStack} alt="" fill className="object-contain" aria-hidden="true" />
+          </div>
+        </div>
+        <div className="absolute inset-0 bg-gradient-to-b from-white via-white/90 to-white" />
+      </div>
 
-      <form
-        onSubmit={handleSubmit}
-        className="space-y-4 bg-white p-5 rounded-2xl shadow-sm border border-morselGold/10"
-      >
+      <div className="relative z-10">
+        <h1 className="text-3xl md:text-4xl font-display font-bold text-morselCocoa mb-4">
+          Bulk & Corporate Orders
+        </h1>
+        <p className="text-base text-morselBrown/80 mb-8 leading-relaxed">
+          Need cookies for an office, client gifts, events, or subscription treats? Share a few
+          details and we&apos;ll follow up with a custom quote tailored to your occasion.
+        </p>
+
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-5 bg-white/95 backdrop-blur-sm p-6 md:p-8 rounded-2xl shadow-xl shadow-morselGold/10 border border-morselGold/20"
+        >
         <div className="grid gap-4 md:grid-cols-2">
           <div>
             <label className="block text-xs mb-1" htmlFor="name">
