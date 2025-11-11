@@ -141,13 +141,13 @@ export default function Navbar() {
           {/* Mobile Hamburger Button */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden p-2 hover:text-morselGold transition-colors duration-150"
+            className="md:hidden p-1.5 hover:text-morselGold transition-colors duration-150"
             aria-label="Toggle mobile menu"
             aria-expanded={isMobileMenuOpen}
           >
             {isMobileMenuOpen ? (
               <svg
-                className="w-6 h-6"
+                className="w-9 h-9"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -161,7 +161,7 @@ export default function Navbar() {
               </svg>
             ) : (
               <svg
-                className="w-6 h-6"
+                className="w-9 h-9"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
