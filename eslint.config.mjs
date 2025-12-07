@@ -7,11 +7,11 @@ const __dirname = dirname(__filename);
 
 const compat = new FlatCompat({
   baseDirectory: __dirname,
+  resolvePluginsRelativeTo: __dirname,
 });
 
-const eslintConfig = [
-  ...compat.extends("next/core-web-vitals"),
+// Extend Next.js config and spread immediately to avoid circular references
+export default [
+  ...(compat.extends("next/core-web-vitals") || []),
 ];
-
-export default eslintConfig;
 
