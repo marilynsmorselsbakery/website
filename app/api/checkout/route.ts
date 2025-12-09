@@ -10,7 +10,7 @@ import type { Database } from "@/lib/supabase/types";
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
 const stripe = stripeSecretKey
   ? new Stripe(stripeSecretKey, {
-      apiVersion: "2025-11-17.clover",
+      apiVersion: "2025-11-17.clover" as Stripe.LatestApiVersion,
     })
   : null;
 
