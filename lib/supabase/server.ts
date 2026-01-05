@@ -12,25 +12,25 @@ const getSupabaseUrl = () => {
   return url;
 };
 
-const getSupabaseAnonKey = () => {
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!anonKey) {
-    throw new Error("NEXT_PUBLIC_SUPABASE_ANON_KEY is not set");
+const getSupabasePublishableKey = () => {
+  const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+  if (!publishableKey) {
+    throw new Error("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY is not set");
   }
-  return anonKey;
+  return publishableKey;
 };
 
-const getSupabaseServiceRoleKey = () => {
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!serviceRoleKey) {
-    throw new Error("SUPABASE_SERVICE_ROLE_KEY is not set");
+const getSupabaseSecretKey = () => {
+  const secretKey = process.env.SUPABASE_SECRET_KEY;
+  if (!secretKey) {
+    throw new Error("SUPABASE_SECRET_KEY is not set");
   }
-  return serviceRoleKey;
+  return secretKey;
 };
 
 const createServerSupabaseClient = async () => {
   const cookieStore = await cookies();
-  return createServerClient<Database>(getSupabaseUrl(), getSupabaseAnonKey(), {
+  return createServerClient<Database>(getSupabaseUrl(), getSupabasePublishableKey(), {
     cookies: {
       getAll() {
         return cookieStore.getAll();
@@ -49,7 +49,7 @@ export const createSupabaseRouteHandlerClient = async (): Promise<SupabaseClient
   createServerSupabaseClient();
 
 export const createSupabaseServiceRoleClient = (): SupabaseClient<Database> =>
-  createClient<Database>(getSupabaseUrl(), getSupabaseServiceRoleKey(), {
+  createClient<Database>(getSupabaseUrl(), getSupabaseSecretKey(), {
     auth: {
       persistSession: false,
       autoRefreshToken: false,
@@ -57,7 +57,7 @@ export const createSupabaseServiceRoleClient = (): SupabaseClient<Database> =>
   });
 
 export const createSupabaseServiceAnonClient = (): SupabaseClient<Database> =>
-  createClient<Database>(getSupabaseUrl(), getSupabaseAnonKey(), {
+  createClient<Database>(getSupabaseUrl(), getSupabasePublishableKey(), {
     auth: {
       persistSession: false,
       autoRefreshToken: false,
