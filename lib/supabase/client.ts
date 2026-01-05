@@ -12,16 +12,16 @@ const getSupabaseUrl = () => {
   return url;
 };
 
-const getSupabaseAnonKey = () => {
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!anonKey) {
-    throw new Error("NEXT_PUBLIC_SUPABASE_ANON_KEY is not set");
+const getSupabasePublishableKey = () => {
+  const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+  if (!publishableKey) {
+    throw new Error("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY is not set");
   }
-  return anonKey;
+  return publishableKey;
 };
 
 export type SupabaseBrowserClient = SupabaseClient<Database>;
 
 export const createSupabaseBrowserClient = (): SupabaseBrowserClient =>
-  createBrowserClient<Database>(getSupabaseUrl(), getSupabaseAnonKey());
+  createBrowserClient<Database>(getSupabaseUrl(), getSupabasePublishableKey());
 
