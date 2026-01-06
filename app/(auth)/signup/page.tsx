@@ -39,12 +39,19 @@ export default function SignupPage() {
       return;
     }
 
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || window.location.origin;
+    const redirectTo = searchParams.get("redirectTo") || "/account";
+    const emailRedirectTo = `${baseUrl}${redirectTo}`;
+
     const {
       data: { session: newSession },
       error,
     } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        emailRedirectTo,
+      },
     });
 
     if (error) {
