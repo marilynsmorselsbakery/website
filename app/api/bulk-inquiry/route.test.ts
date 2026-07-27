@@ -34,8 +34,10 @@ describe("POST /api/bulk-inquiry", () => {
           company: "Acme Events",
           email: "jamie@example.com",
           phone: "614-555-0123",
-          details: "120 cookies for August 15",
+          quantity: "120",
+          neededByDate: "2099-08-15",
           notes: "Chocolate chip",
+          website: "",
         }),
       })
     );
@@ -46,5 +48,46 @@ describe("POST /api/bulk-inquiry", () => {
       to: "marilynsmorselsbakery@gmail.com",
       replyTo: "jamie@example.com",
     });
+  });
+
+  it("silently accepts a honeypot submission without sending email", async () => {
+    const { POST } = await import("./route");
+    const response = await POST(
+      new NextRequest("https://marilynsmorsels.com/api/bulk-inquiry", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          name: "Bot",
+          email: "bot@example.com",
+          quantity: "120",
+          neededByDate: "2099-08-15",
+          website: "https://spam.example",
+        }),
+      })
+    );
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({ ok: true });
+    expect(resendSend).not.toHaveBeenCalled();
+  });
+
+  it("rejects invalid structured fields without sending email", async () => {
+    const { POST } = await import("./route");
+    const response = await POST(
+      new NextRequest("https://marilynsmorsels.com/api/bulk-inquiry", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          name: "Jamie Customer",
+          email: "jamie@example.com",
+          quantity: "cookies",
+          neededByDate: "not-a-date",
+          website: "",
+        }),
+      })
+    );
+
+    expect(response.status).toBe(400);
+    expect(resendSend).not.toHaveBeenCalled();
   });
 });

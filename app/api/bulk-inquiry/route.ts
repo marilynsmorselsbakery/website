@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 import {
+  isBulkInquiryHoneypot,
   parseBulkInquiryPayload,
   sendBulkInquiryEmail,
 } from "../../../lib/email/bulk-inquiry";
@@ -24,6 +25,11 @@ export async function POST(request: NextRequest) {
 
   try {
     const payload = await request.json();
+
+    if (isBulkInquiryHoneypot(payload)) {
+      return NextResponse.json({ ok: true });
+    }
+
     const inquiry = parseBulkInquiryPayload(payload, {
       id: randomUUID(),
       submittedAt: new Date().toISOString(),

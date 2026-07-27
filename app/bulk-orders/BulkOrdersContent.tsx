@@ -7,8 +7,14 @@ import milkStack from "@/assets/milk_stack.png";
 import plateStack from "@/assets/plate_stack.png";
 import { track } from "@/lib/analytics/client";
 
-export default function BulkOrdersContent() {
-  const [status, setStatus] = useState<"idle" | "submitting" | "sent" | "error">("idle");
+export default function BulkOrdersContent({
+  minimumDate,
+}: {
+  minimumDate: string;
+}) {
+  const [status, setStatus] = useState<
+    "idle" | "submitting" | "sent" | "rate-limited" | "error"
+  >("idle");
 
   const offsetTop = useParallax({ speed: 0.2, offset: -40 });
   const offsetBottom = useParallax({ speed: 0.1, offset: 60 });
@@ -20,15 +26,26 @@ export default function BulkOrdersContent() {
     const formData = new FormData(event.currentTarget);
     const body = Object.fromEntries(formData.entries());
 
-    const response = await fetch("/api/bulk-inquiry", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
+    if (String(formData.get("website") ?? "").trim()) {
+      setStatus("sent");
+      return;
+    }
 
-    setStatus(response.ok ? "sent" : "error");
-    if (response.ok) {
-      track({ event: "generate_lead", lead_type: "bulk_order" });
+    try {
+      const response = await fetch("/api/bulk-inquiry", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+
+      if (response.ok) {
+        setStatus("sent");
+        track({ event: "generate_lead", lead_type: "bulk_order" });
+      } else {
+        setStatus(response.status === 429 ? "rate-limited" : "error");
+      }
+    } catch {
+      setStatus("error");
     }
   };
 
@@ -65,8 +82,19 @@ export default function BulkOrdersContent() {
 
         <form
           onSubmit={handleSubmit}
-          className="space-y-5 bg-white/95 backdrop-blur-sm p-6 md:p-8 rounded-2xl shadow-xl shadow-morselGold/10 border border-morselGold/20"
+          className="relative space-y-5 bg-white/95 backdrop-blur-sm p-6 md:p-8 rounded-2xl shadow-xl shadow-morselGold/10 border border-morselGold/20"
         >
+          <div className="absolute -left-[10000px]" aria-hidden="true">
+            <label htmlFor="website">Website</label>
+            <input
+              id="website"
+              name="website"
+              type="text"
+              tabIndex={-1}
+              autoComplete="off"
+            />
+          </div>
+
           <div className="grid gap-4 md:grid-cols-2">
             <div>
               <label className="block text-xs mb-1" htmlFor="name">
@@ -116,16 +144,35 @@ export default function BulkOrdersContent() {
             </div>
           </div>
 
-          <div>
-            <label className="block text-xs mb-1" htmlFor="details">
-              Estimated quantity & date
-            </label>
-            <input
-              id="details"
-              name="details"
-              required
-              className="w-full border text-sm px-3 py-2 rounded-md"
-            />
+          <div className="grid gap-4 md:grid-cols-2">
+            <div>
+              <label className="block text-xs mb-1" htmlFor="quantity">
+                Estimated number of cookies
+              </label>
+              <input
+                id="quantity"
+                name="quantity"
+                type="number"
+                min={1}
+                max={100000}
+                step={1}
+                required
+                className="w-full border text-sm px-3 py-2 rounded-md"
+              />
+            </div>
+            <div>
+              <label className="block text-xs mb-1" htmlFor="neededByDate">
+                Needed-by date
+              </label>
+              <input
+                id="neededByDate"
+                name="neededByDate"
+                type="date"
+                min={minimumDate}
+                required
+                className="w-full border text-sm px-3 py-2 rounded-md"
+              />
+            </div>
           </div>
 
           <div>
@@ -155,6 +202,11 @@ export default function BulkOrdersContent() {
           )}
           {status === "error" && (
             <p className="text-xs text-red-700 mt-1">Something went wrong. Please try again.</p>
+          )}
+          {status === "rate-limited" && (
+            <p className="text-xs text-red-700 mt-1">
+              Too many attempts. Please wait a few minutes and try again.
+            </p>
           )}
         </form>
       </div>

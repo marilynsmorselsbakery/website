@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import BulkOrdersContent from "./BulkOrdersContent";
+import { easternDateString } from "@/lib/email/bulk-inquiry";
 
 export const metadata: Metadata = {
   title: "Bulk & Corporate Orders",
@@ -19,5 +20,5 @@ export const metadata: Metadata = {
 };
 
 export default function BulkOrdersPage() {
-  return <BulkOrdersContent />;
+  return <BulkOrdersContent minimumDate={easternDateString()} />;
 }
