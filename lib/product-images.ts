@@ -1,15 +1,15 @@
 import type { StaticImageData } from "next/image";
 // Real product photos (2026-04-23 — converted from iOS HEIC by MBC, mapped by Claude)
-import ccBaked from "@/assets/chocolate-chip-baked.jpg";
-import ccDough from "@/assets/chocolate-chip-dough.jpg";
-import cowboyBaked from "@/assets/cowboy-baked.jpg";
-import cowboyDough from "@/assets/cowboy-dough.jpg";
-import pbcupBaked from "@/assets/pbcup-baked.jpg";
-import pbcupDough from "@/assets/pbcup-dough.jpg";
-import trioBaked from "@/assets/trio.jpg";
-import halfHalfPile from "@/assets/half-half.jpg";
+import ccBaked from "../assets/chocolate-chip-baked.jpg";
+import ccDough from "../assets/chocolate-chip-dough.jpg";
+import cowboyBaked from "../assets/cowboy-baked.jpg";
+import cowboyDough from "../assets/cowboy-dough.jpg";
+import pbcupBaked from "../assets/pbcup-baked.jpg";
+import pbcupDough from "../assets/pbcup-dough.jpg";
+import trioBaked from "../assets/trio.jpg";
+import halfHalfPile from "../assets/half-half.jpg";
 // Legacy fallback
-import chipsBowl from "@/assets/chips_bowl.png";
+import chipsBowl from "../assets/chips_bowl.png";
 
 /**
  * Maps flavor slug → local image asset.
@@ -42,4 +42,9 @@ const FALLBACK_IMAGE: StaticImageData = chipsBowl;
 
 export function getProductImage(flavorId: string): StaticImageData {
   return PRODUCT_IMAGES[flavorId] ?? FALLBACK_IMAGE;
+}
+
+export function getProductImageSource(flavorId: string): string {
+  const image = getProductImage(flavorId) as StaticImageData | string;
+  return typeof image === "string" ? image : image.src;
 }
