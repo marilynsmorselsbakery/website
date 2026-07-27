@@ -537,4 +537,3 @@ Use a read-only Stripe API query to confirm:
 - The account still has zero tax registrations.
 
 Do not create a payment. Smoke-test only through arrival at Stripe Checkout.
-

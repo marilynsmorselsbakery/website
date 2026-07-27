@@ -1,7 +1,7 @@
 # Bulk Inquiry Protection and Merchant Schema Repair
 
-**Date:** 2026-07-27  
-**Status:** Approved design, pending written-spec review  
+**Date:** 2026-07-27
+**Status:** Approved design, pending written-spec review
 **Site:** https://marilynsmorsels.com
 
 ## Objective
@@ -242,4 +242,3 @@ changes will not be included in commits for this work.
 - Checkout automatic tax remains disabled and no Stripe tax registration is
   created.
 - Targeted tests, full tests, lint, typecheck, and production build pass.
-
