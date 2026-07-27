@@ -18,16 +18,19 @@ const inquiryNotificationTo =
 const resend = resendApiKey ? new Resend(resendApiKey) : null;
 
 export async function POST(request: NextRequest) {
-  if (!resend) {
-    console.error("Bulk inquiry email configuration is missing");
-    return NextResponse.json({ error: "Email is not configured" }, { status: 503 });
-  }
-
   try {
     const payload = await request.json();
 
     if (isBulkInquiryHoneypot(payload)) {
       return NextResponse.json({ ok: true });
+    }
+
+    if (!resend) {
+      console.error("Bulk inquiry email configuration is missing");
+      return NextResponse.json(
+        { error: "Email is not configured" },
+        { status: 503 }
+      );
     }
 
     const inquiry = parseBulkInquiryPayload(payload, {

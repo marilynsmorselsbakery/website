@@ -71,6 +71,23 @@ describe("POST /api/bulk-inquiry", () => {
     expect(resendSend).not.toHaveBeenCalled();
   });
 
+  it("silently accepts a honeypot even when email is not configured", async () => {
+    vi.stubEnv("RESEND_API_KEY", "");
+    vi.resetModules();
+    const { POST } = await import("./route");
+    const response = await POST(
+      new NextRequest("https://marilynsmorsels.com/api/bulk-inquiry", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ website: "https://spam.example" }),
+      })
+    );
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({ ok: true });
+    expect(resendSend).not.toHaveBeenCalled();
+  });
+
   it("rejects invalid structured fields without sending email", async () => {
     const { POST } = await import("./route");
     const response = await POST(

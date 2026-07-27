@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import BulkOrdersContent from "./BulkOrdersContent";
 import { easternDateString } from "@/lib/email/bulk-inquiry";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Bulk & Corporate Orders",
   description:
