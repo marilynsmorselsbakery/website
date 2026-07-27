@@ -5,7 +5,8 @@ export type BulkInquiryData = {
   company: string;
   email: string;
   phone: string;
-  details: string;
+  quantity: number;
+  neededByDate: string;
   notes: string;
 };
 
@@ -36,9 +37,47 @@ function readString(
   return normalized.length <= maxLength ? normalized : null;
 }
 
+export function easternDateString(now = new Date()): string {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/New_York",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(now);
+  const part = (type: Intl.DateTimeFormatPartTypes) =>
+    parts.find((entry) => entry.type === type)?.value ?? "";
+
+  return `${part("year")}-${part("month")}-${part("day")}`;
+}
+
+export function isBulkInquiryHoneypot(payload: unknown): boolean {
+  if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+    return false;
+  }
+
+  const value = (payload as Record<string, unknown>).website;
+  return typeof value === "string" && value.trim().length > 0;
+}
+
+function isCalendarDate(value: string): boolean {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+
+  const [year, month, day] = value.split("-").map(Number);
+  const parsed = new Date(0);
+  parsed.setUTCHours(0, 0, 0, 0);
+  parsed.setUTCFullYear(year, month - 1, day);
+
+  return (
+    parsed.getUTCFullYear() === year &&
+    parsed.getUTCMonth() === month - 1 &&
+    parsed.getUTCDate() === day
+  );
+}
+
 export function parseBulkInquiryPayload(
   payload: unknown,
-  metadata: { id: string; submittedAt: string }
+  metadata: { id: string; submittedAt: string },
+  options: { today?: string } = {}
 ): BulkInquiryData | null {
   if (!payload || typeof payload !== "object" || Array.isArray(payload)) return null;
 
@@ -47,15 +86,26 @@ export function parseBulkInquiryPayload(
   const company = readString(data, "company", 150);
   const email = readString(data, "email", 254)?.toLowerCase() ?? null;
   const phone = readString(data, "phone", 50);
-  const details = readString(data, "details", 200);
+  const quantityValue = readString(data, "quantity", 6);
+  const neededByDate = readString(data, "neededByDate", 10);
   const notes = readString(data, "notes", 2_000);
+  const quantity =
+    quantityValue && /^\d+$/.test(quantityValue)
+      ? Number(quantityValue)
+      : Number.NaN;
+  const today = options.today ?? easternDateString();
 
   if (
     !name ||
     company === null ||
     !email ||
     phone === null ||
-    !details ||
+    !Number.isInteger(quantity) ||
+    quantity < 1 ||
+    quantity > 100_000 ||
+    !neededByDate ||
+    !isCalendarDate(neededByDate) ||
+    neededByDate < today ||
     notes === null ||
     !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
   ) {
@@ -68,7 +118,8 @@ export function parseBulkInquiryPayload(
     company,
     email,
     phone,
-    details,
+    quantity,
+    neededByDate,
     notes,
   };
 }
@@ -86,6 +137,13 @@ function display(value: string): string {
   return value || "Not provided";
 }
 
+function formatNeededByDate(value: string): string {
+  return new Date(`${value}T12:00:00.000Z`).toLocaleDateString("en-US", {
+    dateStyle: "medium",
+    timeZone: "America/New_York",
+  });
+}
+
 export async function sendBulkInquiryEmail(
   inquiry: BulkInquiryData,
   send: BulkInquiryEmailSender,
@@ -96,6 +154,8 @@ export async function sendBulkInquiryEmail(
     timeStyle: "short",
     timeZone: "America/New_York",
   });
+  const neededByDate = formatNeededByDate(inquiry.neededByDate);
+  const quantity = `${inquiry.quantity.toLocaleString("en-US")} cookies`;
   const text = `NEW BULK INQUIRY
 
 Submitted: ${submittedAt} ET
@@ -104,8 +164,8 @@ Company: ${display(inquiry.company)}
 Email: ${inquiry.email}
 Phone: ${display(inquiry.phone)}
 
-ESTIMATED QUANTITY & DATE
-${inquiry.details}
+Estimated quantity: ${quantity}
+Needed by: ${neededByDate}
 
 NOTES & PREFERENCES
 ${display(inquiry.notes)}
@@ -129,8 +189,10 @@ Reply to this email to contact the customer.`;
       )}<br><a href="mailto:${escapeHtml(inquiry.email)}">${escapeHtml(
         inquiry.email
       )}</a><br>${escapeHtml(display(inquiry.phone))}</p>
-      <h2 style="font-size:18px;margin-top:26px">Estimated quantity &amp; date</h2>
-      <p>${escapeHtml(inquiry.details)}</p>
+      <h2 style="font-size:18px;margin-top:26px">Order timing</h2>
+      <p><strong>Estimated quantity:</strong> ${escapeHtml(
+        quantity
+      )}<br><strong>Needed by:</strong> ${escapeHtml(neededByDate)}</p>
       <h2 style="font-size:18px;margin-top:26px">Notes &amp; preferences</h2>
       <p>${escapeHtml(display(inquiry.notes))}</p>
       <p style="color:#72533f;margin-top:26px">Reply to this email to contact the customer.</p>
@@ -144,7 +206,7 @@ Reply to this email to contact the customer.`;
       from: config.from,
       to: config.businessEmail,
       replyTo: inquiry.email,
-      subject: `NEW BULK INQUIRY — ${inquiry.name} — ${inquiry.details}`,
+      subject: `NEW BULK INQUIRY — ${inquiry.name} — ${quantity} — ${neededByDate}`,
       html,
       text,
     },
